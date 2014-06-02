@@ -49,6 +49,16 @@ module DeferrableGratification
       end
     end
 
+    # Return a Deferrable which immediately fails with the specified value.
+    # This is useful for failing with the string for an error message instead
+    # of an exception.
+    #
+    # @param value [Object] The value to fail with.
+    # @return [EM::Deferrable] A deferrable that fails with the specified value.
+    def failure_value(value)
+      blank.tap { |d| d.fail(value) }
+    end
+
     # Return a completely uninteresting Deferrable.
     def blank
       DeferrableGratification::DefaultDeferrable.new

@@ -5,7 +5,6 @@ module DeferrableGratification
   # Barebones Deferrable that includes the {DeferrableGratification}
   # extensions:
   #
-  # @see Fluent
   # @see Bothback
   # @see Combinators
   class DefaultDeferrable
