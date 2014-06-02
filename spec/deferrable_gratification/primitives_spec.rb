@@ -56,4 +56,33 @@ describe DeferrableGratification::Primitives do
       it { should fail_with(RangeError, 'you shall not pass!') }
     end
   end
+
+  describe '.failure_value' do
+    describe 'DG.failure_value with a string' do
+      subject { DG.failure_value('i am a string') }
+
+      it 'fails with the specified string' do
+        error = nil
+        subject.errback do |err|
+          error = err
+        end
+
+        error.should == 'i am a string'
+      end
+    end
+
+    describe 'DG.failure_value with an arbitrary object' do
+      let(:obj) { double(Object) }
+      subject { DG.failure_value(obj) }
+
+      it 'fails with the specified object' do
+        error = nil
+        subject.errback do |err|
+          error = err
+        end
+
+        error.should equal obj
+      end
+    end
+  end
 end
