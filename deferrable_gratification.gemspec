@@ -1,14 +1,17 @@
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'deferrable_gratification/version'
+
 Gem::Specification.new do |gem|
   gem.name = 'deferrable_gratification'
-  gem.version = '0.3.1'
+  gem.version = DeferrableGratification::VERSION
 
   gem.summary = 'Makes evented programming easier with composition and abstraction.'
   gem.description = <<-DESC
 Deferrable Gratification (DG) facilitates asynchronous programming in Ruby, by helping create abstractions around complex operations built up from simpler ones.  It helps make asynchronous code less error-prone and easier to compose.  It also provides some enhancements to the Deferrable API.
 
 Features include:
-
- * fluent (aka chainable) syntax for registering multiple callbacks and errbacks to the same Deferrable.
 
  * a #bothback method for registering code to run on either success or failure.
  
@@ -23,7 +26,7 @@ Features include:
 
   gem.required_ruby_version = '>= 1.8.7'
 
-  gem.add_dependency 'eventmachine'
+  gem.add_dependency 'eventmachine', '>= 1.0.3'
 
   gem.add_development_dependency "bundler", "~> 1.5"
   gem.add_development_dependency 'rake'
