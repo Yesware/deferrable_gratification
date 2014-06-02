@@ -1,6 +1,6 @@
 require 'rspec/core/rake_task'
 require 'yard'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 namespace :spec do
   RSpec::Core::RakeTask.new(:default)
@@ -88,7 +88,7 @@ end
 def gemspec_file() Dir[File.join(File.dirname(__FILE__), '*.gemspec')].first or raise "Couldn't find gemspec" end
 def gemspec() Gem::Specification.load(gemspec_file) end
 namespace :package do
-  Rake::GemPackageTask.new(gemspec) do |pkg|
+  Gem::PackageTask.new(gemspec) do |pkg|
     pkg.need_zip = true
     pkg.need_tar = true
   end

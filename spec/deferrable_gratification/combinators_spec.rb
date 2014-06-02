@@ -71,7 +71,7 @@ describe DeferrableGratification::Combinators do
         before { operation.succeed }
 
         it 'should catch the exception' do
-          lambda { subject }.should_not raise_error(/kaboom/)
+          lambda { subject }.should_not raise_error
         end
 
         it 'should fail and pass through the exception' do
@@ -147,7 +147,7 @@ describe DeferrableGratification::Combinators do
         before { operation.fail 'bad robot' }
 
         it 'should catch the exception' do
-          lambda { subject }.should_not raise_error(/kaboom/)
+          lambda { subject }.should_not raise_error
         end
 
         it 'should fail and pass through the exception' do
@@ -332,7 +332,7 @@ describe DeferrableGratification::Combinators do
         before { operation.succeed }
 
         it 'should catch the exception' do
-          lambda { subject }.should_not raise_error(/kaboom/)
+          lambda { subject }.should_not raise_error
         end
 
         it 'should fail and pass through the exception' do
@@ -350,7 +350,7 @@ describe DeferrableGratification::Combinators do
     end
 
     describe 'DG.chain(lambda { 2 })' do
-      subject { DG.chain(lambda { 2 }) }
+      subject { DG.chain(lambda {|_| 2 }) }
 
       it { should succeed_with(2) }
     end
@@ -364,7 +364,7 @@ DG.chain(
     CHAIN
       subject do
         DG.chain(
-          lambda { DummyDB.query(:person_id, :name => 'Sam') },
+          lambda {|_| DummyDB.query(:person_id, :name => 'Sam') },
           lambda {|person_id| DummyDB.query(:products, :buyer_id => person_id) },
           lambda {|products| DummyDB.query(:description, :product_id => products.map(&:id)) },
           lambda {|descriptions| descriptions.map(&:brief) })
@@ -373,10 +373,10 @@ DG.chain(
       before do
         DummyDB.stub_successful_query(:person_id, :name => 'Sam') { 42 }
         DummyDB.stub_successful_query(:products, :buyer_id => 42) do
-          [1, 2, 3].map {|id| mock('product', :id => id) }
+          [1, 2, 3].map {|id| double('product', :id => id) }
         end
         DummyDB.stub_successful_query(:description, :product_id => [1, 2, 3]) do
-          %w(Car Dishwasher Laptop).map {|brief| mock('description', :brief => brief) }
+          %w(Car Dishwasher Laptop).map {|brief| double('description', :brief => brief) }
         end
       end
 
@@ -392,7 +392,7 @@ DG.chain(
     CHAIN
       subject do
         DG.chain(
-          lambda { DummyDB.query(:person_id, :name => :nonexistent) },
+          lambda {|_| DummyDB.query(:person_id, :name => :nonexistent) },
           lambda {|person_id| DummyDB.query(:products, :buyer_id => person_id) },
           lambda {|products| DummyDB.query(:description, :product_id => products.map(&:id)) },
           lambda {|descriptions| descriptions.map(&:brief) })
@@ -556,7 +556,7 @@ DG.chain(
           subject { do_loop.call(ui) }
           let(:ui) do
             double().tap do |ui|
-              ui.stub!(:wait_for_click) { EM::DefaultDeferrable.new.tap(&:succeed) }
+              ui.stub(:wait_for_click) { EM::DefaultDeferrable.new.tap(&:succeed) }
             end
           end
 
@@ -566,7 +566,7 @@ DG.chain(
           end
 
           describe 'if the user already clicked' do
-            before { ui.stub!(:wait_for_click) { DG.const(:click!)} }
+            before { ui.stub(:wait_for_click) { DG.const(:click!)} }
 
             it { should succeed_with(:click!) }
 
@@ -577,7 +577,7 @@ DG.chain(
           end
 
           describe 'if ui.wait_for_click throws an exception' do
-            before { ui.stub!(:wait_for_click).and_raise('User eaten by weasel') }
+            before { ui.stub(:wait_for_click).and_raise('User eaten by weasel') }
 
             it { should fail_with('User eaten by weasel') }
 
@@ -590,7 +590,7 @@ DG.chain(
           describe 'if the user takes 4 seconds to click' do
             before do
               @attempts = 0
-              ui.stub!(:wait_for_click) do
+              ui.stub(:wait_for_click) do
                 @attempts += 1
                 if @attempts >= 4
                   DG.const(:click!)

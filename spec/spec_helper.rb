@@ -131,7 +131,7 @@ RSpec::Matchers.define :succeed_with do |*value_or_empty|
     !@errback.called? && @callback.called? && (
       if @cares_about_value
         @callback.result_satisfies? do |result|
-          if @value.respond_to? :match
+          if @value.is_a?(Regexp)
             @value.match(result)
           else
             @value == result
