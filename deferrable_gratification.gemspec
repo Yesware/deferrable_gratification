@@ -25,10 +25,11 @@ Features include:
 
   gem.add_dependency 'eventmachine'
 
+  gem.add_development_dependency "bundler", "~> 1.5"
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'bluecloth'
-  gem.add_development_dependency 'rspec', '>= 2.3.0'
+  gem.add_development_dependency 'rspec', '< 3.0.0'
 
 
   gem.files = Dir[*%w(
