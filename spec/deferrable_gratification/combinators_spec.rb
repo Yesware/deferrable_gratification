@@ -464,6 +464,67 @@ DG.chain(
     end
   end
 
+  describe '.all_successes' do
+    describe 'DG.all_successes()' do
+      subject { DG.all_successes() }
+      it { should succeed_with [] }
+    end
+
+    describe 'DG.all_successes(first, second)' do
+      let(:first) { EM::DefaultDeferrable.new }
+      let(:second) { EM::DefaultDeferrable.new }
+      subject { DG.all_successes(first, second) }
+
+      it 'should not succeed or fail' do
+        subject.should_not succeed_with_anything
+        subject.should_not fail_with_anything
+      end
+
+      describe 'after first succeeds with :one' do
+        before { first.succeed :one }
+
+        it 'should not succeed or fail' do
+          subject.should_not succeed_with_anything
+          subject.should_not fail_with_anything
+        end
+
+        describe 'after second succeeds with :two' do
+          before { second.succeed :two }
+
+          it { should succeed_with [:one, :two] }
+        end
+
+        describe 'after second fails' do
+          before { second.fail RuntimeError.new('oops') }
+
+          it { should fail_with('oops') }
+        end
+      end
+
+      describe 'after both fail' do
+        before do
+          first.fail RuntimeError.new('oops 1')
+          second.fail RuntimeError.new('oops 2')
+        end
+
+        it { should fail_with('oops 1') }
+      end
+
+      describe 'preserving order of operations' do
+        describe 'if second succeeds before first does' do
+          subject do
+            DG.all_successes(first, second).tap do |successes|
+              second.succeed :two
+              first.succeed :one
+            end
+          end
+          it 'should still succeed with [:one, :two]' do
+            subject.should succeed_with [:one, :two]
+          end
+        end
+      end
+    end
+  end
 
   describe '.join_first_success' do
     describe 'DG.join_first_success()' do
